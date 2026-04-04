@@ -9,7 +9,7 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
   // init vars
   const opts = {
     // if set to 'false', make sure to extract urls of index docs below
-    virtualTrunk: true,
+    virtualBranches: true,
     // semtree options: https://github.com/wikibonsai/semtree?tab=readme-ov-file#options
   };
   const bonsaiText: any = {}; // { filename: content } hash
@@ -34,7 +34,7 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
           node.url = '/entries/' + doc.slug;
         }
       }
-      // uncomment if 'virtualTrunk' is set to 'false'
+      // uncomment if 'virtualBranches' is set to 'false'
       // for (const node of bonsai.nodes) {
       //   const doc: any = allIndexDocs.find((doc) => path.basename(doc.id, '.md') == node.text);
       //   if (doc !== undefined) {
@@ -53,7 +53,7 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
         + '\n---\n'
         + 'root: ' + bonsai.root
         + '\n---\n'
-        + 'trunk: ' + bonsai.trunk
+        + 'branches: ' + bonsai.branches
         + '\n---\n'
         + 'petioleMap: ' + JSON.stringify(bonsai.petioleMap)
         + '\n---\n'
