@@ -38,7 +38,7 @@ export async function generateBlogBackRefs(thisFileName: string) {
             }
             backattrs[typeStr].push({
               filenames: thatFName,
-              htmlHref: '/blog/' + thatDoc.slug,
+              htmlHref: '/blog/' + thatDoc.id,
               htmlText: thatFName,
             });
           }
@@ -52,7 +52,7 @@ export async function generateBlogBackRefs(thisFileName: string) {
         if (fnameStr === thisFileName) {
           backlinks.push({
             linktype: typeStr,
-            htmlHref: '/blog/' + thatDoc.slug,
+            htmlHref: '/blog/' + thatDoc.id,
             htmlText: thatFName,
           });
         }
@@ -87,7 +87,7 @@ export async function generateEntryBackRefs(thisFileName: string) {
             }
             backattrs[typeStr].push({
               filenames: thatFName,
-              htmlHref: '/entries/' + thatDoc.slug,
+              htmlHref: '/entries/' + thatDoc.id,
               htmlText: thatFName,
             });
           }
@@ -101,7 +101,7 @@ export async function generateEntryBackRefs(thisFileName: string) {
         if (fnameStr === thisFileName) {
           backlinks.push({
             linktype: typeStr,
-            htmlHref: '/entries/' + thatDoc.slug,
+            htmlHref: '/entries/' + thatDoc.id,
             htmlText: thatFName,
           });
         }

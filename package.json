@@ -12,12 +12,12 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/mdx": "^5.0.0",
     "@astrojs/rss": "^4.0.0",
-    "@astrojs/sitemap": "^3.2.0",
-    "@astrojs/svelte": "^7.0.0",
-    "@astrojs/tailwind": "^5.1.0",
-    "astro": "^5.0.0",
+    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/svelte": "^8.0.0",
+    "@astrojs/tailwind": "^6.0.0",
+    "astro": "^6.0.0",
     "fast-glob": "^3.3.1",
     "gray-matter": "^4.0.3",
     "remark-caml": "^0.0.6-rm",

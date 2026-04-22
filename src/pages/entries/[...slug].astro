@@ -1,18 +1,18 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
+import { type CollectionEntry, getCollection, render } from 'astro:content';
 import Entry from '../../layouts/Entry.astro';
 
 export async function getStaticPaths() {
 	const entries = await getCollection('entries');
 	return entries.map((entry) => ({
-		params: { slug: entry.slug },
+		params: { slug: entry.id },
 		props: entry,
 	}));
 }
 type Props = CollectionEntry<'entries'>;
 
 const entry = Astro.props;
-const { Content, remarkPluginFrontmatter } = await entry.render();
+const { Content, remarkPluginFrontmatter } = await render(entry);
 entry.data.frontmatter = remarkPluginFrontmatter;
 ---
 

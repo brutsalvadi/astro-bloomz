@@ -31,7 +31,7 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
       for (const node of bonsai.nodes) {
         const doc: any = allEntryDocs.find((doc) => path.basename(doc.id, '.md') == node.text);
         if (doc !== undefined) {
-          node.url = '/entries/' + doc.slug;
+          node.url = '/entries/' + doc.id;
         }
       }
       // uncomment if 'virtualBranches' is set to 'false'

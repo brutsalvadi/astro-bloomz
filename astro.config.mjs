@@ -30,6 +30,5 @@ remarkPlugins[1][1].resolveEmbedContent = resolveEmbedContent;
 export default defineConfig({
   site: 'https://wiki.bincio.com',
   integrations: [sitemap(), tailwind(), svelte()],
-  legacy: { collections: true },
   markdown: { remarkPlugins },
 });
