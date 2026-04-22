@@ -23,7 +23,8 @@ export async function generateBlogBackRefs(thisFileName: string) {
   for (const thatDoc of allBlogPosts) {
     const thatFName: string = path.basename(thatDoc.id, '.md');
     if (thatFName === thisFileName) { continue; }
-    const wiki = wikirefs.scan(thatDoc.body);
+    const wikiRaw = thatDoc.body ? wikirefs.scan(thatDoc.body) : null;
+    const wiki: any[] = Array.isArray(wikiRaw) ? wikiRaw : [];
     for (const w of wiki) {
       if (w.kind === wikirefs.CONST.WIKI.ATTR) {
         // @ts-expect-error
@@ -71,7 +72,8 @@ export async function generateEntryBackRefs(thisFileName: string) {
   for (const thatDoc of allEntryDocs) {
     const thatFName: string = path.basename(thatDoc.id, '.md');
     if (thatFName === thisFileName) { continue; }
-    const wiki = wikirefs.scan(thatDoc.body);
+    const wikiRaw = thatDoc.body ? wikirefs.scan(thatDoc.body) : null;
+    const wiki: any[] = Array.isArray(wikiRaw) ? wikiRaw : [];
     for (const w of wiki) {
       if (w.kind === wikirefs.CONST.WIKI.ATTR) {
         // @ts-expect-error

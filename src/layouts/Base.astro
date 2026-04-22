@@ -1,0 +1,148 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = 'BincioWiki', description = 'The Bincio group wiki' } = Astro.props;
+const editUrl = import.meta.env.PUBLIC_EDIT_URL ?? '';
+const editEnabled = editUrl !== '';
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Set theme before first paint to avoid flash -->
+  <script is:inline>
+    const t = localStorage.getItem('bincio-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  </script>
+
+  <style is:global>
+    /* ── Theme tokens ───────────────────────────────────────────────── */
+    :root, [data-theme="dark"] {
+      --bg-base:      #09090b;
+      --bg-card:      #18181b;
+      --bg-elevated:  #27272a;
+      --bg-subtle:    #3f3f46;
+      --text-primary: #ffffff;
+      --text-2:       #e4e4e7;
+      --text-3:       #d4d4d8;
+      --text-4:       #a1a1aa;
+      --text-5:       #71717a;
+      --border:       #27272a;
+      --border-sub:   #3f3f46;
+      --accent:       #00c8ff;
+      --accent-dim:   rgba(0,200,255,0.15);
+      --text-color-wiki:             #00c8ff;
+      --text-color-wiki-visited:     #009ab8;
+      --text-color-invalid-wikilink: #52525b;
+    }
+    [data-theme="light"] {
+      --bg-base:      #fafafa;
+      --bg-card:      #f4f4f5;
+      --bg-elevated:  #e4e4e7;
+      --bg-subtle:    #d4d4d8;
+      --text-primary: #18181b;
+      --text-2:       #27272a;
+      --text-3:       #3f3f46;
+      --text-4:       #52525b;
+      --text-5:       #71717a;
+      --border:       #e4e4e7;
+      --border-sub:   #d4d4d8;
+      --accent:       #0284c7;
+      --accent-dim:   rgba(2,132,199,0.12);
+      --text-color-wiki:             #0284c7;
+      --text-color-wiki-visited:     #0369a1;
+      --text-color-invalid-wikilink: #a1a1aa;
+    }
+
+    /* ── Tailwind light mode overrides ──────────────────────────────── */
+    [data-theme="light"] .bg-zinc-950  { background-color: var(--bg-base)     !important; }
+    [data-theme="light"] .bg-zinc-900  { background-color: var(--bg-card)     !important; }
+    [data-theme="light"] .bg-zinc-800  { background-color: var(--bg-elevated) !important; }
+    [data-theme="light"] .bg-zinc-700  { background-color: var(--bg-subtle)   !important; }
+    [data-theme="light"] .text-white   { color: var(--text-primary) !important; }
+    [data-theme="light"] .text-zinc-100{ color: var(--text-primary) !important; }
+    [data-theme="light"] .text-zinc-200{ color: var(--text-2)       !important; }
+    [data-theme="light"] .text-zinc-300{ color: var(--text-3)       !important; }
+    [data-theme="light"] .text-zinc-400{ color: var(--text-4)       !important; }
+    [data-theme="light"] .text-zinc-500{ color: var(--text-5)       !important; }
+    [data-theme="light"] .border-zinc-800 { border-color: var(--border)     !important; }
+    [data-theme="light"] .border-zinc-700 { border-color: var(--border-sub) !important; }
+    [data-theme="light"] .bg-zinc-950\/90 { background-color: rgba(250,250,250,0.92) !important; }
+
+    /* ── Base reset ──────────────────────────────────────────────────── */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; overflow-x: hidden; }
+  </style>
+</head>
+<body
+  class="font-sans antialiased min-h-screen"
+  style="background-color: var(--bg-base); color: var(--text-primary)"
+>
+  <nav
+    class="border-b sticky top-0 z-50 bg-zinc-950/90 backdrop-blur"
+    style="border-color: var(--border)"
+  >
+    <div class="max-w-5xl mx-auto px-4 h-12 flex items-center gap-3">
+      <a href="/" class="font-bold text-white tracking-tight hover:text-[color:var(--accent)] transition-colors shrink-0">
+        Bincio<span style="color: var(--accent)">Wiki</span>
+      </a>
+      <div class="flex items-center gap-5 flex-1 min-w-0 overflow-x-auto" style="scrollbar-width:none">
+        <a href="/" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Home</a>
+        <a href="/entries" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Pages</a>
+        <a href="/blog" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Blog</a>
+        <a href="/map" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Map</a>
+      </div>
+      <div class="ml-auto shrink-0 flex items-center gap-1">
+        {editEnabled && (
+          <a
+            href={editUrl}
+            target="_blank"
+            class="text-xs text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500"
+          >Edit</a>
+        )}
+        <button
+          id="theme-toggle"
+          class="text-zinc-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-md hover:bg-zinc-800 text-base"
+          aria-label="Toggle theme"
+        >☀</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 py-6">
+    <slot />
+  </main>
+
+  <footer class="border-t mt-12 py-6 text-center text-sm" style="border-color: var(--border); color: var(--text-5)">
+    <p>BincioWiki &mdash; built with <a href="https://astro.build" class="hover:text-white transition-colors" style="color: var(--accent)">Astro</a> &amp; <a href="https://github.com/wikibonsai/astro-bloomz" class="hover:text-white transition-colors" style="color: var(--accent)">astro-bloomz</a></p>
+  </footer>
+
+  <script>
+    const btn = document.getElementById('theme-toggle') as HTMLButtonElement;
+    function applyTheme(theme: string) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('bincio-theme', theme);
+      btn.textContent = theme === 'dark' ? '☀' : '☾';
+      btn.title = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    applyTheme(current);
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+  </script>
+</body>
+</html>

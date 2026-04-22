@@ -1,68 +1,45 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Base from '../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+
+const entries = (await getCollection('entries'))
+  .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
+                - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf())
+  .slice(0, 10);
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header title={SITE_TITLE} />
-		<main>
-			<h1>🧑‍🌾 Hello, Gardener!</h1>
-			<p>
-				Welcome to <a class="wiki" href="/entries/astro-bloomz/">astro-bloomz</a>, a digital garden starter template.
-				This template serves as a lightweight, minimally-styled starting point for anyone looking to
-				build a personal website, blog, digital garden, or portfolio with <a href="https://astro.build">Astro</a> -- and <a href="https://github.com/wikibonsai/wikibonsai">WikiBonsai</a>.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like
-				Tailwind, React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Configs</li>
-				<ul>
-					<li>Edit Astro configs in <code>astro.config.mjs</code></li>
-					<li>Edit Bloomz setup and configs and logic in <code>src/wikibonsai/</code></li>
-				</ul>
-				<li>Pages</li>
-				<ul>
-					<li>Edit this page in <code>src/pages/index.astro</code></li>
-					<li>Edit the tag tree map in <code>src/pages/map.astro</code></li>
-				</ul>
-				<li>Layouts</li>
-				<ul>
-					<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-					<li>Customize the entry page layout in <code>src/layouts/Entry.astro</code></li>
-				</ul>
-				<li>Components</li>
-				<ul>
-					<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-					<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-					<li>Edit the tag tree map branching in <code>src/components/Branch.astro</code></li>
-					<li>Edit the entry breadcrumb items in <code>src/components/BreadCrumbs.astro</code></li>
-					<li>Edit the entry backrefs items in <code>src/components/BackRefs.astro</code></li>
-				</ul>
-				<li>Content</li>
-				<ul>
-					<li>Check out the included blog posts in <code>src/pages/blog/</code></li>
-					<li>Check out the included entries in <code>src/pages/entries/</code></li>
-					<li>Check out the included topic index in <code>src/pages/index/</code></li>
-				</ul>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to checkout the <a href="https://docs.astro.build/"
-					>astro docs</a> or <a href="https://github.com/wikibonsai/wikibonsai/"
-					>wikibonsai docs</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <div class="max-w-3xl mx-auto">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary)">
+        Bincio<span style="color: var(--accent)">Wiki</span>
+      </h1>
+      <p style="color: var(--text-4)">The collective memory of the Bincio group.</p>
+    </div>
+
+    {entries.length > 0 && (
+      <section>
+        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-2)">Recent pages</h2>
+        <ul class="space-y-2">
+          {entries.map(entry => (
+            <li>
+              <a
+                href={`/entries/${entry.slug}/`}
+                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+                style="background: var(--bg-card)"
+              >
+                <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-2)">
+                  {entry.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-4 text-sm">
+          <a href="/entries" style="color: var(--accent)" class="hover:opacity-80 transition-opacity">All pages →</a>
+        </p>
+      </section>
+    )}
+  </div>
+</Base>

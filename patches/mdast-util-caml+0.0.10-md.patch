@@ -1,0 +1,32 @@
+diff --git a/node_modules/mdast-util-caml/dist/index.js b/node_modules/mdast-util-caml/dist/index.js
+index a8ec999..3fc00e3 100644
+--- a/node_modules/mdast-util-caml/dist/index.js
++++ b/node_modules/mdast-util-caml/dist/index.js
+@@ -352,9 +352,9 @@ function fromMarkdownCaml(opts) {
+     // is accessible via 'this.stack' (see below)
+     this.enter(attrBoxDataNode, token);
+     // current key
+-    var curKey = this.getData('curKey');
++    var curKey = this.data.curKey;
+     if (curKey === undefined) {
+-      this.setData('curKey', '');
++      this.data.curKey = '';
+     }
+   }
+   function exitAttrKey(token) {
+@@ -363,13 +363,13 @@ function fromMarkdownCaml(opts) {
+     if (current.data && current.data.items && !Object.keys(current.data.items).includes(key)) {
+       current.data.items[key] = [];
+     }
+-    this.setData('curKey', key);
++    this.data.curKey = key;
+   }
+   function exitAttrVal(token) {
+     var stringValue = this.sliceSerialize(token);
+     var item = resolve(stringValue);
+     var current = top(this.stack);
+-    var curKey = this.getData('curKey');
++    var curKey = this.data.curKey;
+     if (current.data && current.data.items) {
+       if (curKey !== undefined) {
+         current.data.items[curKey].push(item);

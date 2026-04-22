@@ -29,7 +29,8 @@ export function createResolveEmbedContent(remarkPlugins: any[]) {
     // note: we're not using remarkRehype or rehypeStringify here
   }
 
-  return function resolveEmbedContentInternal(filename: string): any {
+  return function resolveEmbedContentInternal(_unused: unknown, filename: string): any {
+    if (!filename) { return; }
     // markdown-only
     if (wikirefs.isMedia(filename)) { return; }
     // cycle detection

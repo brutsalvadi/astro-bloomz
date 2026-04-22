@@ -1,35 +1,36 @@
 {
-  "name": "astro-bloomz",
+  "name": "bincio-wiki",
   "type": "module",
-  "version": "0.0.2",
-  "description": "A starter project for a WikiBonsai digital garden using the Astro static site generator.",
-  "license": "MIT",
-  "author": {
-    "name": "manunamz",
-    "email": "manuanmz@pm.me"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wikibonsai/astro-bloomz"
-  },
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "postinstall": "patch-package"
   },
   "dependencies": {
-    "@astrojs/mdx": "^1.1.0",
-    "@astrojs/rss": "^3.0.0",
-    "@astrojs/sitemap": "^3.0.0",
-    "astro": "^3.1.4",
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/rss": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.0",
+    "@astrojs/svelte": "^7.0.0",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^5.0.0",
     "fast-glob": "^3.3.1",
     "gray-matter": "^4.0.3",
     "remark-caml": "^0.0.6-rm",
     "remark-wikirefs": "^0.0.8-rm",
     "semtree": "^0.0.15",
+    "svelte": "^5.0.0",
+    "tailwindcss": "^3.4.0",
     "unist-util-select": "^5.0.0",
     "wikirefs": "^0.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "patch-package": "^8.0.1",
+    "typescript": "^5.7.0"
   }
 }

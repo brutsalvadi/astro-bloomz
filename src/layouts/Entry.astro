@@ -1,8 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Base from './Base.astro';
 import BreadCrumbs from '../components/BreadCrumbs.astro';
 import BackRefs from '../components/BackRefs.astro';
 
@@ -11,53 +9,17 @@ type Props = CollectionEntry<'entries'>['data'];
 const { title, frontmatter } = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.prose {
-				min-height: 100vh;
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="prose">
-					<div class="title">
-						<h1>{title}</h1>
-						<BreadCrumbs current={frontmatter.fname}/>
-						<hr />
-					</div>
-					<slot />
-				</div>
-				<BackRefs frontmatter={frontmatter}/>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Base title={title}>
+  <article class="max-w-3xl mx-auto">
+    <div class="mb-6 pb-4 border-b" style="border-color: var(--border)">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary)">{title}</h1>
+      <BreadCrumbs current={frontmatter.fname} />
+    </div>
+    <div class="prose-wiki">
+      <slot />
+    </div>
+    <div class="mt-8 pt-6 border-t" style="border-color: var(--border)">
+      <BackRefs frontmatter={frontmatter} />
+    </div>
+  </article>
+</Base>

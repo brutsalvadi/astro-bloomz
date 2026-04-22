@@ -1,0 +1,54 @@
+diff --git a/node_modules/mdast-util-wikirefs/dist/index.js b/node_modules/mdast-util-wikirefs/dist/index.js
+index 2ca356d..7b2a919 100644
+--- a/node_modules/mdast-util-wikirefs/dist/index.js
++++ b/node_modules/mdast-util-wikirefs/dist/index.js
+@@ -278,9 +278,9 @@ function fromMarkdownWikiAttrs(opts) {
+     // is accessible via 'this.stack' (see below)
+     this.enter(attrBoxDataNode, token);
+     // current key
+-    var curKey = this.getData('curKey');
++    var curKey = this.data.curKey;
+     if (curKey === undefined) {
+-      this.setData('curKey', '');
++      this.data.curKey = '';
+     }
+   }
+   function exitWikiAttrKey(token) {
+@@ -289,7 +289,7 @@ function fromMarkdownWikiAttrs(opts) {
+     if (current.data && current.data.items && !Object.keys(current.data.items).includes(attrtype)) {
+       current.data.items[attrtype] = [];
+     }
+-    this.setData('curKey', attrtype);
++    this.data.curKey = attrtype;
+   }
+   function exitWikiAttrVal(token) {
+     var filename = this.sliceSerialize(token);
+@@ -320,7 +320,7 @@ function fromMarkdownWikiAttrs(opts) {
+       baseUrl: baseUrl
+     };
+     if (current.data && current.data.items) {
+-      var curKey = this.getData('curKey');
++      var curKey = this.data.curKey;
+       if (curKey !== undefined) {
+         current.data.items[curKey].push(item);
+       }
+@@ -411,7 +411,8 @@ function fromMarkdownWikiLinks(opts) {
+   // <a class="wiki link doctype__doctype" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a>
+ 
+   function exitWikiLink(token) {
+-    var wikiLink = this.exit(token);
++    var wikiLink = this.stack[this.stack.length - 1];
++    this.exit(token);
+ 
+     // html-text
+     var labelText = wikiLink.data.item.label;
+@@ -596,7 +597,8 @@ function fromMarkdownWikiEmbeds(opts) {
+ 
+   function exitWikiEmbed(token) {
+     var _wikiEmbed$data$item$;
+-    var wikiEmbed = this.exit(token);
++    var wikiEmbed = this.stack[this.stack.length - 1];
++    this.exit(token);
+     // init vars (guard: filename can be unset if token stream omits it)
+     var filename = (_wikiEmbed$data$item$ = wikiEmbed.data.item.filename) !== null && _wikiEmbed$data$item$ !== void 0 ? _wikiEmbed$data$item$ : '';
+     var header = wikiEmbed.data.item.header;

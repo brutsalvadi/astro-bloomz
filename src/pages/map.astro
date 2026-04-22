@@ -1,8 +1,5 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import Base from '../layouts/Base.astro';
 import Branch from '../components/Branch.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { bonsai } from '../wikibonsai/semtree';
@@ -11,17 +8,11 @@ const root = bonsai ? bonsai.root : '';
 const treeNodes = bonsai ? bonsai.nodes : [];
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header title={SITE_TITLE} />
-		<main>
-			<h1>Tag Map</h1>
-			<Branch nodes={treeNodes.filter(tn => tn.text === root)} />
-		</main>
-		<Footer />
-	</body>
-</html>
+<Base title={`Map — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6" style="color: var(--text-primary)">Tag Map</h1>
+    <div class="prose-wiki">
+      <Branch nodes={treeNodes.filter(tn => tn.text === root)} />
+    </div>
+  </div>
+</Base>

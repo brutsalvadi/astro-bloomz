@@ -1,44 +1,35 @@
-import { base, defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import tailwind from '@astrojs/tailwind';
+import svelte from '@astrojs/svelte';
 import { remarkWikiRefs } from 'remark-wikirefs';
 import { remarkCaml } from 'remark-caml';
-
 import {
-	resolveHtmlHref,
-	resolveHtmlText,
-	createResolveEmbedContent,
-	generateForeRefsRemarkPlugin,
+  resolveHtmlHref,
+  resolveHtmlText,
+  createResolveEmbedContent,
+  generateForeRefsRemarkPlugin,
 } from './src/wikibonsai/wikirefs';
 
-
 const remarkPlugins = [
-	remarkCaml,
-	[
-		remarkWikiRefs,
-		{
-			resolveHtmlHref: resolveHtmlHref,
-			resolveHtmlText: resolveHtmlText,
-			resolveEmbedContent: null, // we'll set this later -- see below
-		},
-	],
-	generateForeRefsRemarkPlugin,
+  remarkCaml,
+  [
+    remarkWikiRefs,
+    {
+      resolveHtmlHref,
+      resolveHtmlText,
+      resolveEmbedContent: null,
+    },
+  ],
+  generateForeRefsRemarkPlugin,
 ];
 
-// embed content needs access to a unified processor
 const resolveEmbedContent = createResolveEmbedContent(remarkPlugins);
 remarkPlugins[1][1].resolveEmbedContent = resolveEmbedContent;
 
-// https://astro.build/config
 export default defineConfig({
-	site: 'https://astro-bloomz.netlify.app',
-	integrations: [
-		sitemap(),
-	],
-	assetsInclude: true,
-	markdown: {
-		// Preserve Astro's default plugins: GitHub-flavored Markdown and Smartypants
-		extendDefaultPlugins: true,
-		// Applied to .md and .mdx files
-		remarkPlugins: remarkPlugins,
-	},
+  site: 'https://wiki.bincio.com',
+  integrations: [sitemap(), tailwind(), svelte()],
+  legacy: { collections: true },
+  markdown: { remarkPlugins },
 });
