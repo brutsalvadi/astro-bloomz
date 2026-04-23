@@ -1,9 +1,10 @@
 ---
 import { SITE_TITLE } from '../consts';
-import { bonsai } from '../wikibonsai/semtree';
+import { buildBonsai } from '../wikibonsai/semtree';
 
 const { current } = Astro.props;
 
+const bonsai = await buildBonsai();
 const root = bonsai ? bonsai.root : '';
 const treeNodes = bonsai ? bonsai.nodes : [];
 

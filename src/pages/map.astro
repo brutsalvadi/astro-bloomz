@@ -2,8 +2,9 @@
 import Base from '../layouts/Base.astro';
 import Branch from '../components/Branch.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-import { bonsai } from '../wikibonsai/semtree';
+import { buildBonsai } from '../wikibonsai/semtree';
 
+const bonsai = await buildBonsai();
 const root = bonsai ? bonsai.root : '';
 const treeNodes = bonsai ? bonsai.nodes : [];
 ---

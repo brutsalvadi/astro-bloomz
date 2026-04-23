@@ -16,8 +16,8 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
   const rootFilename: string = 'i.bonsai';
   // build 'bonsaiText' hash
   const allIndexDocs = await getCollection('index');
-  allIndexDocs.forEach((doc: any) => {                  // remove preceding/trailing newlines/whitespace
-    bonsaiText[path.basename(doc.id, '.md')] = doc.body.replace(/^\s+|\s+$/g, '');
+  allIndexDocs.forEach((doc: any) => {
+    bonsaiText[doc.id] = (doc.body ?? '').replace(/^\s+|\s+$/g, '');
   });
   let bonsai: SemTree | string = 'uninitialized bonsai';
   try {
@@ -49,19 +49,6 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
       //     node.url = '/blog/' + doc.slug;
       //   }
       // }
-      console.log('bonsai: \n'
-        + '\n---\n'
-        + 'root: ' + bonsai.root
-        + '\n---\n'
-        + 'branches: ' + bonsai.branches
-        + '\n---\n'
-        + 'petioleMap: ' + JSON.stringify(bonsai.petioleMap)
-        + '\n---\n'
-        + 'orphans: ' + bonsai.orphans
-        + '\n---\n'
-        + 'nodes: ' + JSON.stringify(bonsai.nodes)
-        + '\n---\n'
-      );
       return bonsai;
     }
   } catch (e) {
@@ -69,4 +56,5 @@ export async function buildBonsai(): Promise<SemTree | undefined> {
   }
 }
 
-export const bonsai: SemTree | undefined = await buildBonsai();
+// Do not call buildBonsai() at module init — the content store isn't ready yet.
+// Each component that needs the tree should call buildBonsai() directly.

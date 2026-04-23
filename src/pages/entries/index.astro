@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+
+const entries = (await getCollection('entries'))
+  .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
+                - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf());
+---
+
+<Base title={`Pages — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6" style="color: var(--text-primary)">All Pages</h1>
+    {entries.length === 0 && (
+      <p style="color: var(--text-4)">No pages yet.</p>
+    )}
+    <ul class="space-y-2">
+      {entries.map(entry => (
+        <li>
+          <a
+            href={`/entries/${entry.id}/`}
+            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+            style="background: var(--bg-card)"
+          >
+            <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-2)">
+              {entry.data.title}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
