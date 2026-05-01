@@ -4,16 +4,22 @@ import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 
-const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const posts = (await getCollection('blog'))
+  .filter(p => !p.id.startsWith('_'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<Base title={`Blog — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+<Base title={`Storie — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6" style="color: var(--text-primary)">Blog</h1>
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold" style="color: var(--text-primary)">Storie</h1>
+      <button
+        id="new-story-btn"
+        class="text-xs text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500"
+      >+ Nuova storia</button>
+    </div>
     {posts.length === 0 && (
-      <p style="color: var(--text-4)">No posts yet.</p>
+      <p style="color: var(--text-4)">Nessuna storia ancora.</p>
     )}
     <ul class="space-y-4">
       {posts.map(post => (
@@ -43,3 +49,9 @@ const posts = (await getCollection('blog')).sort(
     </ul>
   </div>
 </Base>
+
+<script>
+  document.getElementById('new-story-btn')?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('open-editor', { detail: { apiBase: '/stories' } }));
+  });
+</script>

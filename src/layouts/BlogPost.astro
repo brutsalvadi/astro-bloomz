@@ -3,9 +3,9 @@ import type { CollectionEntry } from 'astro:content';
 import Base from './Base.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & { id?: string };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, id } = Astro.props;
 ---
 
 <Base title={title} description={description}>
@@ -17,13 +17,29 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
       <div class="text-sm mb-2" style="color: var(--text-4)">
         <FormattedDate date={pubDate} />
         {updatedDate && (
-          <span class="italic"> · Updated <FormattedDate date={updatedDate} /></span>
+          <span class="italic"> · Aggiornato <FormattedDate date={updatedDate} /></span>
         )}
       </div>
-      <h1 class="text-3xl font-bold" style="color: var(--text-primary)">{title}</h1>
+      <div class="flex items-start justify-between gap-4">
+        <h1 class="text-3xl font-bold" style="color: var(--text-primary)">{title}</h1>
+        {id && (
+          <button
+            data-slug={id}
+            id="edit-post-btn"
+            class="shrink-0 text-xs text-zinc-500 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500 mt-1"
+          >Modifica</button>
+        )}
+      </div>
     </div>
     <div class="prose-wiki">
       <slot />
     </div>
   </article>
 </Base>
+
+<script>
+  document.getElementById('edit-post-btn')?.addEventListener('click', (e) => {
+    const slug = (e.currentTarget as HTMLElement).dataset.slug;
+    window.dispatchEvent(new CustomEvent('open-editor', { detail: { slug, apiBase: '/stories' } }));
+  });
+</script>

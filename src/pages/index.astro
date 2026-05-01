@@ -3,10 +3,17 @@ import Base from '../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
-const entries = (await getCollection('entries'))
+const allEntries = await getCollection('entries');
+
+const wikiEntries = allEntries
+  .filter(e => !e.id.startsWith('_'))
   .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
                 - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf())
   .slice(0, 10);
+
+const docEntries = allEntries
+  .filter(e => e.id.startsWith('_docs/'))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
 ---
 
 <Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -15,14 +22,14 @@ const entries = (await getCollection('entries'))
       <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary)">
         Bincio<span style="color: var(--accent)">Wiki</span>
       </h1>
-      <p style="color: var(--text-4)">The collective memory of the Bincio group.</p>
+      <p style="color: var(--text-4)">La memoria collettiva del gruppo Bincio.</p>
     </div>
 
-    {entries.length > 0 && (
-      <section>
-        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-2)">Recent pages</h2>
+    {wikiEntries.length > 0 ? (
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-2)">Pagine recenti</h2>
         <ul class="space-y-2">
-          {entries.map(entry => (
+          {wikiEntries.map(entry => (
             <li>
               <a
                 href={`/entries/${entry.id}/`}
@@ -37,8 +44,34 @@ const entries = (await getCollection('entries'))
           ))}
         </ul>
         <p class="mt-4 text-sm">
-          <a href="/entries" style="color: var(--accent)" class="hover:opacity-80 transition-opacity">All pages →</a>
+          <a href="/entries" style="color: var(--accent)" class="hover:opacity-80 transition-opacity">Tutte le pagine →</a>
         </p>
+      </section>
+    ) : (
+      <section class="mb-10">
+        <p style="color: var(--text-4)" class="text-sm italic">Nessuna pagina ancora.</p>
+      </section>
+    )}
+
+    {docEntries.length > 0 && (
+      <section>
+        <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">Documentazione</h2>
+        <p class="text-xs mb-4" style="color: var(--text-5)">Come funziona questo wiki</p>
+        <ul class="space-y-2">
+          {docEntries.map(entry => (
+            <li>
+              <a
+                href={`/entries/${entry.id}/`}
+                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+                style="background: var(--bg-card)"
+              >
+                <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-4)">
+                  {entry.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
     )}
   </div>

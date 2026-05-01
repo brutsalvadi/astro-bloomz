@@ -4,15 +4,24 @@ import Base from './Base.astro';
 import BreadCrumbs from '../components/BreadCrumbs.astro';
 import BackRefs from '../components/BackRefs.astro';
 
-type Props = CollectionEntry<'entries'>['data'];
+type Props = CollectionEntry<'entries'>['data'] & { id?: string };
 
-const { title, frontmatter } = Astro.props;
+const { title, frontmatter, id } = Astro.props;
 ---
 
 <Base title={title}>
   <article class="max-w-3xl mx-auto">
     <div class="mb-6 pb-4 border-b" style="border-color: var(--border)">
-      <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary)">{title}</h1>
+      <div class="flex items-start justify-between gap-4">
+        <h1 class="text-3xl font-bold" style="color: var(--text-primary)">{title}</h1>
+        {id && (
+          <button
+            data-slug={id}
+            class="shrink-0 text-xs text-zinc-500 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500 mt-1"
+            id="edit-entry-btn"
+          >Modifica</button>
+        )}
+      </div>
       <BreadCrumbs current={frontmatter.fname} />
     </div>
     <div class="prose-wiki">
@@ -23,3 +32,10 @@ const { title, frontmatter } = Astro.props;
     </div>
   </article>
 </Base>
+
+<script>
+  document.getElementById('edit-entry-btn')?.addEventListener('click', (e) => {
+    const slug = (e.currentTarget as HTMLElement).dataset.slug;
+    window.dispatchEvent(new CustomEvent('open-editor', { detail: { slug, apiBase: '/pages' } }));
+  });
+</script>

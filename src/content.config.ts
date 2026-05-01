@@ -16,7 +16,7 @@ const entries = defineCollection({
   loader: glob({
     pattern: '**/*.md',
     base: './src/content/entries',
-    generateId: ({ entry }) => entry.replace(/^_wiki\//, '').replace(/\.mdx?$/, ''),
+    generateId: ({ entry }) => entry.replace(/\.mdx?$/, ''),
   }),
   schema: z.object({
     title: z.string(),

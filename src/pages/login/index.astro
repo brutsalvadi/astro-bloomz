@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Accedi — BincioWiki" public={true}>
+  <div class="max-w-sm mx-auto mt-16">
+    <h1 class="text-2xl font-bold mb-8 text-center" style="color: var(--text-primary)">
+      Bincio<span style="color: var(--accent)">Wiki</span>
+    </h1>
+
+    <form id="login-form" class="flex flex-col gap-4">
+      <div id="error-msg" class="hidden text-sm px-3 py-2 rounded bg-red-900/40 text-red-300 border border-red-800"></div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm" style="color: var(--text-4)">Handle</label>
+        <input
+          id="handle"
+          name="handle"
+          type="text"
+          autocomplete="username"
+          autocapitalize="none"
+          required
+          class="px-3 py-2 rounded border text-sm bg-zinc-900 border-zinc-700 focus:outline-none focus:border-zinc-500"
+          style="color: var(--text-primary)"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm" style="color: var(--text-4)">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          class="px-3 py-2 rounded border text-sm bg-zinc-900 border-zinc-700 focus:outline-none focus:border-zinc-500"
+          style="color: var(--text-primary)"
+        />
+      </div>
+
+      <button
+        type="submit"
+        id="submit-btn"
+        class="mt-2 px-4 py-2 rounded text-sm font-medium transition-colors"
+        style="background: var(--accent); color: #000"
+      >
+        Accedi
+      </button>
+    </form>
+  </div>
+</Base>
+
+<script>
+  const form     = document.getElementById('login-form') as HTMLFormElement;
+  const errorMsg = document.getElementById('error-msg') as HTMLDivElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  // If already logged in, go home
+  fetch('/api/me', { credentials: 'include' })
+    .then(r => { if (r.ok) window.location.replace('/'); })
+    .catch(() => {});
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Accesso in corso…';
+
+    const handle   = (document.getElementById('handle') as HTMLInputElement).value.trim();
+    const password = (document.getElementById('password') as HTMLInputElement).value;
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handle, password }),
+      });
+
+      if (res.ok) {
+        const params = new URLSearchParams(window.location.search);
+        window.location.replace(params.get('next') || '/');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        errorMsg.textContent = data.detail || 'Credenziali non valide';
+        errorMsg.classList.remove('hidden');
+      }
+    } catch {
+      errorMsg.textContent = 'Errore di rete. Riprova.';
+      errorMsg.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Accedi';
+    }
+  });
+</script>

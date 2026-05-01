@@ -3,31 +3,76 @@ import Base from '../../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 
-const entries = (await getCollection('entries'))
+const allEntries = await getCollection('entries');
+
+const wikiEntries = allEntries
+  .filter(e => !e.id.startsWith('_'))
   .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
                 - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf());
+
+const docEntries = allEntries
+  .filter(e => e.id.startsWith('_docs/'))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
 ---
 
-<Base title={`Pages — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+<Base title={`Pagine — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
   <div class="max-w-3xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6" style="color: var(--text-primary)">All Pages</h1>
-    {entries.length === 0 && (
-      <p style="color: var(--text-4)">No pages yet.</p>
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold" style="color: var(--text-primary)">Tutte le pagine</h1>
+      <button
+        id="new-page-btn"
+        class="text-xs text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500"
+      >+ Nuova pagina</button>
+    </div>
+
+    {wikiEntries.length === 0 ? (
+      <p style="color: var(--text-4)" class="text-sm italic mb-10">Nessuna pagina ancora.</p>
+    ) : (
+      <section class="mb-10">
+        <ul class="space-y-2">
+          {wikiEntries.map(entry => (
+            <li>
+              <a
+                href={`/entries/${entry.id}/`}
+                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+                style="background: var(--bg-card)"
+              >
+                <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-2)">
+                  {entry.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
     )}
-    <ul class="space-y-2">
-      {entries.map(entry => (
-        <li>
-          <a
-            href={`/entries/${entry.id}/`}
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
-            style="background: var(--bg-card)"
-          >
-            <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-2)">
-              {entry.data.title}
-            </span>
-          </a>
-        </li>
-      ))}
-    </ul>
+
+    {docEntries.length > 0 && (
+      <section>
+        <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">Documentazione</h2>
+        <p class="text-xs mb-4" style="color: var(--text-5)">Come funziona questo wiki</p>
+        <ul class="space-y-2">
+          {docEntries.map(entry => (
+            <li>
+              <a
+                href={`/entries/${entry.id}/`}
+                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+                style="background: var(--bg-card)"
+              >
+                <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-4)">
+                  {entry.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </div>
 </Base>
+
+<script>
+  document.getElementById('new-page-btn')?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('open-editor', { detail: {} }));
+  });
+</script>

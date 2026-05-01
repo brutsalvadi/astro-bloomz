@@ -1,13 +1,13 @@
 ---
 import '../styles/global.css';
+import PageEditor from '../components/PageEditor.svelte';
 
 interface Props {
   title?: string;
   description?: string;
+  public?: boolean;
 }
-const { title = 'BincioWiki', description = 'The Bincio group wiki' } = Astro.props;
-const editUrl = import.meta.env.PUBLIC_EDIT_URL ?? '';
-const editEnabled = editUrl !== '';
+const { title = 'BincioWiki', description = 'La memoria collettiva del gruppo Bincio.', public: isPublic = false } = Astro.props;
 ---
 <!doctype html>
 <html lang="en" data-theme="dark">
@@ -26,6 +26,37 @@ const editEnabled = editUrl !== '';
     document.documentElement.setAttribute('data-theme', t);
   </script>
 
+  <!-- Race-calendar palette: auto-switches accent colour during Grand Tours -->
+  <script is:inline>
+    (function () {
+      var palettes = {
+        default: { accent: '#60a5fa', dim: 'rgba(96,165,250,0.15)'  },
+        giro:    { accent: '#f472b6', dim: 'rgba(244,114,182,0.15)' },
+        tour:    { accent: '#facc15', dim: 'rgba(250,204,21,0.15)'  },
+        vuelta:  { accent: '#ef4444', dim: 'rgba(239,68,68,0.15)'   },
+      };
+      // [month 0-indexed, day] inclusive — update each year
+      var races = [
+        { key: 'giro',   start: [4, 8],  end: [5, 1]  },
+        { key: 'tour',   start: [5, 27], end: [6, 19] },
+        { key: 'vuelta', start: [7, 15], end: [8, 6]  },
+      ];
+      function autoKey() {
+        var now = new Date(), y = now.getFullYear();
+        for (var i = 0; i < races.length; i++) {
+          var r = races[i];
+          if (now >= new Date(y, r.start[0], r.start[1]) &&
+              now <  new Date(y, r.end[0],   r.end[1] + 1)) return r.key;
+        }
+        return 'default';
+      }
+      var key = autoKey();
+      var p   = palettes[key] || palettes.default;
+      document.documentElement.style.setProperty('--accent',     p.accent);
+      document.documentElement.style.setProperty('--accent-dim', p.dim);
+    })();
+  </script>
+
   <style is:global>
     /* ── Theme tokens ───────────────────────────────────────────────── */
     :root, [data-theme="dark"] {
@@ -40,10 +71,10 @@ const editEnabled = editUrl !== '';
       --text-5:       #71717a;
       --border:       #27272a;
       --border-sub:   #3f3f46;
-      --accent:       #00c8ff;
-      --accent-dim:   rgba(0,200,255,0.15);
-      --text-color-wiki:             #00c8ff;
-      --text-color-wiki-visited:     #009ab8;
+      --accent:       #60a5fa;
+      --accent-dim:   rgba(96,165,250,0.15);
+      --text-color-wiki:             var(--accent);
+      --text-color-wiki-visited:     #3b82f6;
       --text-color-invalid-wikilink: #52525b;
     }
     [data-theme="light"] {
@@ -60,7 +91,7 @@ const editEnabled = editUrl !== '';
       --border-sub:   #d4d4d8;
       --accent:       #0284c7;
       --accent-dim:   rgba(2,132,199,0.12);
-      --text-color-wiki:             #0284c7;
+      --text-color-wiki:             var(--accent);
       --text-color-wiki-visited:     #0369a1;
       --text-color-invalid-wikilink: #a1a1aa;
     }
@@ -105,13 +136,6 @@ const editEnabled = editUrl !== '';
         <a href="/map" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Map</a>
       </div>
       <div class="ml-auto shrink-0 flex items-center gap-1">
-        {editEnabled && (
-          <a
-            href={editUrl}
-            target="_blank"
-            class="text-xs text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500"
-          >Edit</a>
-        )}
         <button
           id="theme-toggle"
           class="text-zinc-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-md hover:bg-zinc-800 text-base"
@@ -126,8 +150,18 @@ const editEnabled = editUrl !== '';
   </main>
 
   <footer class="border-t mt-12 py-6 text-center text-sm" style="border-color: var(--border); color: var(--text-5)">
-    <p>BincioWiki &mdash; built with <a href="https://astro.build" class="hover:text-white transition-colors" style="color: var(--accent)">Astro</a> &amp; <a href="https://github.com/wikibonsai/astro-bloomz" class="hover:text-white transition-colors" style="color: var(--accent)">astro-bloomz</a></p>
+    <p>BincioWiki &mdash; built with <a href="https://astro.build" class="hover:text-white transition-colors" style="color: var(--accent)">Astro</a></p>
   </footer>
+
+  <PageEditor client:load />
+
+  <script define:vars={{ isPublic }}>
+    if (!isPublic) {
+      fetch('/api/me', { credentials: 'include' })
+        .then(r => { if (r.status === 401 || r.status === 403) window.location.replace('/login/'); })
+        .catch(() => {});
+    }
+  </script>
 
   <script>
     const btn = document.getElementById('theme-toggle') as HTMLButtonElement;
