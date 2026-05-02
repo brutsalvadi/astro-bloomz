@@ -115,11 +115,13 @@ const { title = 'BincioWiki', description = 'La memoria collettiva del gruppo Bi
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { margin: 0; overflow-x: hidden; }
+    [data-auth-pending] { visibility: hidden; }
   </style>
 </head>
 <body
   class="font-sans antialiased min-h-screen"
   style="background-color: var(--bg-base); color: var(--text-primary)"
+  {!isPublic ? 'data-auth-pending' : ''}
 >
   <nav
     class="border-b sticky top-0 z-50 bg-zinc-950/90 backdrop-blur"
@@ -135,7 +137,9 @@ const { title = 'BincioWiki', description = 'La memoria collettiva del gruppo Bi
         <a href="/blog" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Blog</a>
         <a href="/map" class="text-sm text-zinc-400 hover:text-white transition-colors shrink-0">Map</a>
       </div>
-      <div class="ml-auto shrink-0 flex items-center gap-1">
+      <div class="ml-auto shrink-0 flex items-center gap-2">
+        <span id="nav-handle" class="text-xs text-zinc-500" style="display:none"></span>
+        <button id="nav-logout" class="text-xs text-zinc-500 hover:text-white transition-colors px-1" style="display:none">Log out</button>
         <button
           id="theme-toggle"
           class="text-zinc-400 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-md hover:bg-zinc-800 text-base"
@@ -158,8 +162,26 @@ const { title = 'BincioWiki', description = 'La memoria collettiva del gruppo Bi
   <script define:vars={{ isPublic }}>
     if (!isPublic) {
       fetch('/api/me', { credentials: 'include' })
-        .then(r => { if (r.status === 401 || r.status === 403) window.location.replace('/login/'); })
-        .catch(() => {});
+        .then(async r => {
+          if (r.status === 401 || r.status === 403) {
+            window.location.replace('/login/');
+            return;
+          }
+          document.body.removeAttribute('data-auth-pending');
+          const user = await r.json().catch(() => null);
+          if (user) {
+            const handleEl = document.getElementById('nav-handle');
+            const logoutEl = document.getElementById('nav-logout');
+            if (handleEl) { handleEl.textContent = '@' + user.handle; handleEl.style.display = ''; }
+            if (logoutEl) logoutEl.style.display = '';
+          }
+        })
+        .catch(() => { document.body.removeAttribute('data-auth-pending'); });
+
+      document.getElementById('nav-logout')?.addEventListener('click', async () => {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+        window.location.replace('/login/');
+      });
     }
   </script>
 
