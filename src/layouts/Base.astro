@@ -121,7 +121,7 @@ const { title = 'BincioWiki', description = 'La memoria collettiva del gruppo Bi
 <body
   class="font-sans antialiased min-h-screen"
   style="background-color: var(--bg-base); color: var(--text-primary)"
-  {!isPublic ? 'data-auth-pending' : ''}
+  data-auth-pending={!isPublic ? '' : undefined}
 >
   <nav
     class="border-b sticky top-0 z-50 bg-zinc-950/90 backdrop-blur"
