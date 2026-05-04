@@ -6,6 +6,7 @@ title: Bincio Wiki
   - Gear e accessori
   - Componenti e upgrade
   - Tecnologia e elettronica
+  - [[BincioActivity]]
 
 - [[BincioOfficina]]
   - Manutenzione

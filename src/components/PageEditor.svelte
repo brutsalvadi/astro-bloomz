@@ -1,9 +1,10 @@
 <script lang="ts">
   const SECTIONS = [
     { label: 'BincioTech', slug: 'bincio-tech', sub: [
-      { label: 'Gear e accessori',       slug: 'gear-accessori' },
-      { label: 'Componenti e upgrade',   slug: 'componenti-upgrade' },
+      { label: 'Gear e accessori',         slug: 'gear-accessori' },
+      { label: 'Componenti e upgrade',     slug: 'componenti-upgrade' },
       { label: 'Tecnologia e elettronica', slug: 'tecnologia' },
+      { label: 'BincioActivity',           slug: 'bincio-activity' },
     ]},
     { label: 'BincioOfficina', slug: 'bincio-officina', sub: [
       { label: 'Manutenzione', slug: 'manutenzione' },
