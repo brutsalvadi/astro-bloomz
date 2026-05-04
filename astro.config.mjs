@@ -79,6 +79,7 @@ export default defineConfig({
         '/api': 'http://localhost:8001',
         '/pages': 'http://localhost:8001',
         '/stories': 'http://localhost:8001',
+        '/assets': 'http://localhost:8001',
         '/rebuild': 'http://localhost:8001',
       },
     },

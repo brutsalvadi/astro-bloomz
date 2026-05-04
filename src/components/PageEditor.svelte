@@ -9,6 +9,9 @@
   let saveStatus = '';
   let savedUrl = '';
   let errorMsg = '';
+  let uploading = false;
+  let dragOver = false;
+  let fileInput: HTMLInputElement;
 
   function reset(detail: { slug?: string; apiBase?: string }) {
     apiBase = detail.apiBase ?? '/pages';
@@ -76,6 +79,23 @@
     }
   }
 
+  async function uploadFiles(files: FileList | File[]) {
+    uploading = true;
+    try {
+      for (const file of Array.from(files)) {
+        const fd = new FormData();
+        fd.append('file', file);
+        const r = await fetch('/api/assets', { method: 'POST', body: fd, credentials: 'include' });
+        if (!r.ok) { errorMsg = `Upload fallito: ${await r.text()}`; continue; }
+        const d = await r.json();
+        const ref = `\n![${d.filename.replace(/\.[^.]+$/, '')}](${d.url})`;
+        content = content.trimEnd() + ref;
+      }
+    } finally {
+      uploading = false;
+    }
+  }
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') open = false;
     if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); save(); }
@@ -116,7 +136,7 @@
       <input
         type="text"
         bind:value={slug}
-        placeholder="nome-pagina"
+        placeholder="nome-pagina  o  cartella/nome"
         class="bg-transparent text-sm font-mono outline-none flex-1 min-w-0"
         style="color: var(--text-2)"
         autofocus
@@ -167,6 +187,25 @@
     style="color: var(--text-2)"
     placeholder="Scrivi in markdown…"
     spellcheck="false"
+    on:dragover|preventDefault={() => dragOver = true}
+    on:dragleave={() => dragOver = false}
+    on:drop|preventDefault={e => { dragOver = false; if (e.dataTransfer?.files) uploadFiles(e.dataTransfer.files); }}
   ></textarea>
+
+  <!-- Image upload bar -->
+  <div
+    class="shrink-0 flex items-center gap-3 px-4 py-2 border-t text-xs transition-colors"
+    style="border-color: var(--border); background: {dragOver ? 'var(--bg-2)' : 'transparent'}"
+  >
+    <button
+      on:click={() => fileInput.click()}
+      disabled={uploading}
+      class="text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-40"
+      title="Carica immagine"
+    >{uploading ? 'Caricamento…' : '+ Immagine'}</button>
+    <span class="text-zinc-600">oppure trascina un file nell'editor</span>
+    <input bind:this={fileInput} type="file" accept="image/*" multiple class="hidden"
+      on:change={e => e.currentTarget.files && uploadFiles(e.currentTarget.files)} />
+  </div>
 </div>
 {/if}
