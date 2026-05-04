@@ -1,19 +1,29 @@
 ---
-title: Tag Map
+title: Bincio Wiki
 ---
 
-- [[astro-bloomz]]
-  - [[test]]
-    - [[test-render]]
-  - [[digital-garden]]
-    - [[wikirefs]]
-  - [[wikibonsai]]
-    - [[semantic-tree]]
-    - [[package]]
-      - [[semtree]]
-      - [[remark-wikirefs]]
-  - [[doctype]]
-    - [[index-type]]
-    - [[entry-type]]
-    - [[page-type]]
-      - [[map-page]]
+- [[BincioTech]]
+  - Gear e accessori
+  - Componenti e upgrade
+  - Tecnologia e elettronica
+
+- [[BincioOfficina]]
+  - Manutenzione
+  - Riparazioni
+  - Fai da te
+
+- [[BincioTour]]
+  - Tour report
+  - Bike packing
+  - Rotte e itinerari
+  - Logistica
+
+- [[BincioCorsa]]
+  - Allenamento
+  - Gare e competizioni
+  - Performance
+
+- [[BincioAbbigliamento]]
+  - Abbigliamento tecnico
+  - Comfort e protezione
+  - Stagionalità

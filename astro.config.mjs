@@ -44,9 +44,11 @@ function contentDeleteWatcher() {
       'astro:server:setup': ({ server }) => {
         const siteRoot = new URL('.', import.meta.url).pathname;
         const dataStore = fileURLToPath(new URL('.astro/data-store.json', import.meta.url));
+        const pagesRoot = fileURLToPath(new URL('../pages/', import.meta.url));
+        const blogRoot = fileURLToPath(new URL('../blog/', import.meta.url));
         const watched = [
-          siteRoot + 'src/content/entries/',
-          siteRoot + 'src/content/blog/',
+          pagesRoot,
+          blogRoot,
         ];
         if (_unlinkHandler) server.watcher.off('unlink', _unlinkHandler);
         let restarting = false;
@@ -70,6 +72,9 @@ export default defineConfig({
   markdown: { remarkPlugins },
   vite: {
     server: {
+      fs: {
+        allow: ['..'],
+      },
       proxy: {
         '/api': 'http://localhost:8001',
         '/pages': 'http://localhost:8001',
