@@ -1,7 +1,39 @@
 <script lang="ts">
+  const SECTIONS = [
+    { label: 'BincioTech', slug: 'bincio-tech', sub: [
+      { label: 'Gear e accessori',       slug: 'gear-accessori' },
+      { label: 'Componenti e upgrade',   slug: 'componenti-upgrade' },
+      { label: 'Tecnologia e elettronica', slug: 'tecnologia' },
+    ]},
+    { label: 'BincioOfficina', slug: 'bincio-officina', sub: [
+      { label: 'Manutenzione', slug: 'manutenzione' },
+      { label: 'Riparazioni',  slug: 'riparazioni' },
+      { label: 'Fai da te',   slug: 'fai-da-te' },
+    ]},
+    { label: 'BincioTour', slug: 'bincio-tour', sub: [
+      { label: 'Tour report',      slug: 'tour-report' },
+      { label: 'Bike packing',     slug: 'bike-packing' },
+      { label: 'Rotte e itinerari', slug: 'rotte-itinerari' },
+      { label: 'Logistica',        slug: 'logistica' },
+    ]},
+    { label: 'BincioCorsa', slug: 'bincio-corsa', sub: [
+      { label: 'Allenamento',        slug: 'allenamento' },
+      { label: 'Gare e competizioni', slug: 'gare' },
+      { label: 'Performance',        slug: 'performance' },
+    ]},
+    { label: 'BincioAbbigliamento', slug: 'bincio-abbigliamento', sub: [
+      { label: 'Abbigliamento tecnico', slug: 'tecnico' },
+      { label: 'Comfort e protezione', slug: 'comfort' },
+      { label: 'Stagionalità',         slug: 'stagionalita' },
+    ]},
+  ];
+
   let open = false;
   let isNew = false;
-  let slug = '';
+  let slug = '';           // used for existing pages
+  let baseName = '';       // page name part for new pages
+  let selectedSection = '';
+  let selectedSub = '';
   let content = '';
   let apiBase = '/pages';
   let saving = false;
@@ -13,9 +45,16 @@
   let dragOver = false;
   let fileInput: HTMLInputElement;
 
+  $: section = SECTIONS.find(s => s.slug === selectedSection) ?? null;
+  $: subs = section?.sub ?? [];
+  $: fullSlug = [selectedSection, selectedSub, baseName].filter(Boolean).join('/');
+
   function reset(detail: { slug?: string; apiBase?: string }) {
     apiBase = detail.apiBase ?? '/pages';
     slug = detail.slug ?? '';
+    baseName = '';
+    selectedSection = '';
+    selectedSub = '';
     content = '';
     isNew = !slug;
     saving = false;
@@ -23,6 +62,23 @@
     saveStatus = '';
     savedUrl = '';
     errorMsg = '';
+  }
+
+  function onSectionChange() {
+    selectedSub = '';
+    applyWikiref();
+  }
+
+  function applyWikiref() {
+    const newRef = section ? `[[${section.label}]]` : '';
+    const existing = /\[\[Bincio[A-Za-z]+\]\]/;
+    if (existing.test(content)) {
+      content = newRef
+        ? content.replace(existing, newRef)
+        : content.replace(new RegExp(`\\s*\\[\\[Bincio[A-Za-z]+\\]\\]\\n?`), '');
+    } else if (newRef) {
+      content = content.trimEnd() + '\n\n' + newRef + '\n';
+    }
   }
 
   async function loadContent() {
@@ -39,9 +95,10 @@
   }
 
   async function save() {
-    const s = slug.trim().toLowerCase().replace(/\s+/g, '-');
+    const s = (isNew ? fullSlug : slug).trim().toLowerCase().replace(/\s+/g, '-');
     if (!s) { errorMsg = 'Nome richiesto'; return; }
-    slug = s;
+    if (isNew) baseName = baseName.trim().toLowerCase().replace(/\s+/g, '-');
+    else slug = s;
     saving = true;
     errorMsg = '';
     try {
@@ -131,12 +188,43 @@
   tabindex="-1"
 >
   <!-- Header bar -->
-  <div class="flex items-center gap-3 px-4 h-12 border-b shrink-0" style="border-color: var(--border)">
+  <div class="flex items-center gap-2 px-4 h-12 border-b shrink-0" style="border-color: var(--border)">
     {#if isNew}
+      <!-- Section picker -->
+      <select
+        bind:value={selectedSection}
+        on:change={onSectionChange}
+        class="bg-transparent text-xs outline-none cursor-pointer shrink-0"
+        style="color: var(--text-4)"
+      >
+        <option value="">— sezione —</option>
+        {#each SECTIONS as s}
+          <option value={s.slug}>{s.label}</option>
+        {/each}
+      </select>
+
+      {#if subs.length}
+        <span class="text-zinc-600 shrink-0">/</span>
+        <select
+          bind:value={selectedSub}
+          class="bg-transparent text-xs outline-none cursor-pointer shrink-0"
+          style="color: var(--text-4)"
+        >
+          <option value="">— sottosezione —</option>
+          {#each subs as sub}
+            <option value={sub.slug}>{sub.label}</option>
+          {/each}
+        </select>
+      {/if}
+
+      {#if selectedSection}
+        <span class="text-zinc-600 shrink-0">/</span>
+      {/if}
+
       <input
         type="text"
-        bind:value={slug}
-        placeholder="nome-pagina  o  cartella/nome"
+        bind:value={baseName}
+        placeholder="nome-pagina"
         class="bg-transparent text-sm font-mono outline-none flex-1 min-w-0"
         style="color: var(--text-2)"
         autofocus
