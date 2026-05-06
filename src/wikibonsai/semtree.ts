@@ -8,8 +8,9 @@ import * as semtree from 'semtree';
 export async function buildBonsai(): Promise<SemTree | undefined> {
   // init vars
   const opts = {
-    // if set to 'false', make sure to extract urls of index docs below
-    virtualBranches: true,
+    // 'false' means i.bonsai itself is the root; all top-level list items are its children.
+    // 'true' would require exactly one top-level item in the file (the virtual root).
+    virtualBranches: false,
     // semtree options: https://github.com/wikibonsai/semtree?tab=readme-ov-file#options
   };
   const bonsaiText: any = {}; // { filename: content } hash
