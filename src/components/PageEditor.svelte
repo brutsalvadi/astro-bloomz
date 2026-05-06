@@ -1,33 +1,5 @@
 <script lang="ts">
-  const SECTIONS = [
-    { label: 'BincioTech', slug: 'bincio-tech', sub: [
-      { label: 'Gear e accessori',         slug: 'gear-accessori' },
-      { label: 'Componenti e upgrade',     slug: 'componenti-upgrade' },
-      { label: 'Tecnologia e elettronica', slug: 'tecnologia' },
-      { label: 'BincioActivity',           slug: 'bincio-activity' },
-    ]},
-    { label: 'BincioOfficina', slug: 'bincio-officina', sub: [
-      { label: 'Manutenzione', slug: 'manutenzione' },
-      { label: 'Riparazioni',  slug: 'riparazioni' },
-      { label: 'Fai da te',   slug: 'fai-da-te' },
-    ]},
-    { label: 'BincioTour', slug: 'bincio-tour', sub: [
-      { label: 'Tour report',      slug: 'tour-report' },
-      { label: 'Bike packing',     slug: 'bike-packing' },
-      { label: 'Rotte e itinerari', slug: 'rotte-itinerari' },
-      { label: 'Logistica',        slug: 'logistica' },
-    ]},
-    { label: 'BincioCorsa', slug: 'bincio-corsa', sub: [
-      { label: 'Allenamento',        slug: 'allenamento' },
-      { label: 'Gare e competizioni', slug: 'gare' },
-      { label: 'Performance',        slug: 'performance' },
-    ]},
-    { label: 'BincioAbbigliamento', slug: 'bincio-abbigliamento', sub: [
-      { label: 'Abbigliamento tecnico', slug: 'tecnico' },
-      { label: 'Comfort e protezione', slug: 'comfort' },
-      { label: 'Stagionalità',         slug: 'stagionalita' },
-    ]},
-  ];
+  import SECTIONS from '../../../config/sections.json';
 
   let open = false;
   let isNew = false;

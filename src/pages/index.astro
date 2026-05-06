@@ -2,14 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
-
-const SECTIONS = [
-  { slug: 'bincio-tech',          label: 'BincioTech',          desc: 'Tecnologia, gadget e componenti' },
-  { slug: 'bincio-officina',      label: 'BincioOfficina',      desc: 'Manutenzione e riparazioni' },
-  { slug: 'bincio-tour',          label: 'BincioTour',          desc: 'Tour, bike packing e rotte' },
-  { slug: 'bincio-corsa',         label: 'BincioCorsa',         desc: 'Allenamento e gare' },
-  { slug: 'bincio-abbigliamento', label: 'BincioAbbigliamento', desc: 'Abbigliamento tecnico' },
-];
+import SECTIONS from '../../../config/sections.json';
 
 const allEntries = await getCollection('entries');
 

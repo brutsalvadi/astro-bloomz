@@ -28,7 +28,7 @@ const entries = defineCollection({
 const index = defineCollection({
   loader: glob({
     pattern: '**/*.md',
-    base: './src/content/index',
+    base: '../config',
     generateId: ({ entry }) => entry.replace(/\.md$/, ''),
   }),
   schema: z.object({
