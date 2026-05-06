@@ -3,17 +3,33 @@ import Base from '../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import { getCollection } from 'astro:content';
 
+const SECTIONS = [
+  { slug: 'bincio-tech',          label: 'BincioTech',          desc: 'Tecnologia, gadget e componenti' },
+  { slug: 'bincio-officina',      label: 'BincioOfficina',      desc: 'Manutenzione e riparazioni' },
+  { slug: 'bincio-tour',          label: 'BincioTour',          desc: 'Tour, bike packing e rotte' },
+  { slug: 'bincio-corsa',         label: 'BincioCorsa',         desc: 'Allenamento e gare' },
+  { slug: 'bincio-abbigliamento', label: 'BincioAbbigliamento', desc: 'Abbigliamento tecnico' },
+];
+
 const allEntries = await getCollection('entries');
 
-const wikiEntries = allEntries
-  .filter(e => !e.id.startsWith('_'))
-  .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
-                - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf())
-  .slice(0, 10);
-
+const bySection: Record<string, typeof allEntries> = Object.fromEntries(SECTIONS.map(s => [s.slug, []]));
 const docEntries = allEntries
   .filter(e => e.id.startsWith('_docs/'))
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+for (const entry of allEntries) {
+  if (entry.id.startsWith('_')) continue;
+  const sec = SECTIONS.find(s => entry.id.startsWith(s.slug + '/'));
+  if (sec) bySection[sec.slug].push(entry);
+}
+
+for (const key of Object.keys(bySection)) {
+  bySection[key].sort((a, b) =>
+    (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf() -
+    (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf()
+  );
+}
 ---
 
 <Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
@@ -25,11 +41,12 @@ const docEntries = allEntries
       <p style="color: var(--text-4)">La memoria collettiva del gruppo Bincio.</p>
     </div>
 
-    {wikiEntries.length > 0 ? (
-      <section class="mb-10">
-        <h2 class="text-lg font-semibold mb-4" style="color: var(--text-2)">Pagine recenti</h2>
+    {SECTIONS.map(sec => bySection[sec.slug].length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">{sec.label}</h2>
+        <p class="text-xs mb-3" style="color: var(--text-5)">{sec.desc}</p>
         <ul class="space-y-2">
-          {wikiEntries.map(entry => (
+          {bySection[sec.slug].map(entry => (
             <li>
               <a
                 href={`/entries/${entry.id}/`}
@@ -43,20 +60,13 @@ const docEntries = allEntries
             </li>
           ))}
         </ul>
-        <p class="mt-4 text-sm">
-          <a href="/entries" style="color: var(--accent)" class="hover:opacity-80 transition-opacity">Tutte le pagine →</a>
-        </p>
       </section>
-    ) : (
-      <section class="mb-10">
-        <p style="color: var(--text-4)" class="text-sm italic">Nessuna pagina ancora.</p>
-      </section>
-    )}
+    ))}
 
     {docEntries.length > 0 && (
       <section>
         <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">Documentazione</h2>
-        <p class="text-xs mb-4" style="color: var(--text-5)">Come funziona questo wiki</p>
+        <p class="text-xs mb-3" style="color: var(--text-5)">Come funziona questo wiki</p>
         <ul class="space-y-2">
           {docEntries.map(entry => (
             <li>

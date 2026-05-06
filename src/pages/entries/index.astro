@@ -3,34 +3,71 @@ import Base from '../../layouts/Base.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 import { getCollection } from 'astro:content';
 
+const SECTIONS = [
+  { slug: 'bincio-tech',          label: 'BincioTech',          desc: 'Tecnologia, gadget e componenti' },
+  { slug: 'bincio-officina',      label: 'BincioOfficina',      desc: 'Manutenzione e riparazioni' },
+  { slug: 'bincio-tour',          label: 'BincioTour',          desc: 'Tour, bike packing e rotte' },
+  { slug: 'bincio-corsa',         label: 'BincioCorsa',         desc: 'Allenamento e gare' },
+  { slug: 'bincio-abbigliamento', label: 'BincioAbbigliamento', desc: 'Abbigliamento tecnico' },
+];
+
 const allEntries = await getCollection('entries');
 
-const wikiEntries = allEntries
-  .filter(e => !e.id.startsWith('_'))
-  .sort((a, b) => (b.data.updatedDate ?? b.data.pubDate ?? new Date(0)).valueOf()
-                - (a.data.updatedDate ?? a.data.pubDate ?? new Date(0)).valueOf());
-
+const bySection: Record<string, typeof allEntries> = Object.fromEntries(SECTIONS.map(s => [s.slug, []]));
+const uncategorized: typeof allEntries = [];
 const docEntries = allEntries
   .filter(e => e.id.startsWith('_docs/'))
   .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+for (const entry of allEntries) {
+  if (entry.id.startsWith('_')) continue;
+  const sec = SECTIONS.find(s => entry.id.startsWith(s.slug + '/'));
+  if (sec) bySection[sec.slug].push(entry);
+  else uncategorized.push(entry);
+}
+
+for (const key of Object.keys(bySection)) {
+  bySection[key].sort((a, b) => a.data.title.localeCompare(b.data.title));
+}
 ---
 
 <Base title={`Pagine — ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
   <div class="max-w-3xl mx-auto">
     <div class="flex items-center justify-between mb-8">
-      <h1 class="text-3xl font-bold" style="color: var(--text-primary)">Tutte le pagine</h1>
+      <h1 class="text-3xl font-bold" style="color: var(--text-primary)">Pagine</h1>
       <button
         id="new-page-btn"
         class="text-xs text-zinc-400 hover:text-white transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500"
       >+ Nuova pagina</button>
     </div>
 
-    {wikiEntries.length === 0 ? (
-      <p style="color: var(--text-4)" class="text-sm italic mb-10">Nessuna pagina ancora.</p>
-    ) : (
-      <section class="mb-10">
+    {SECTIONS.map(sec => bySection[sec.slug].length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">{sec.label}</h2>
+        <p class="text-xs mb-3" style="color: var(--text-5)">{sec.desc}</p>
         <ul class="space-y-2">
-          {wikiEntries.map(entry => (
+          {bySection[sec.slug].map(entry => (
+            <li>
+              <a
+                href={`/entries/${entry.id}/`}
+                class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group"
+                style="background: var(--bg-card)"
+              >
+                <span class="text-sm font-medium group-hover:text-white transition-colors" style="color: var(--text-2)">
+                  {entry.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    {uncategorized.length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-3" style="color: var(--text-2)">Senza categoria</h2>
+        <ul class="space-y-2">
+          {uncategorized.map(entry => (
             <li>
               <a
                 href={`/entries/${entry.id}/`}
@@ -50,7 +87,7 @@ const docEntries = allEntries
     {docEntries.length > 0 && (
       <section>
         <h2 class="text-lg font-semibold mb-1" style="color: var(--text-2)">Documentazione</h2>
-        <p class="text-xs mb-4" style="color: var(--text-5)">Come funziona questo wiki</p>
+        <p class="text-xs mb-3" style="color: var(--text-5)">Come funziona questo wiki</p>
         <ul class="space-y-2">
           {docEntries.map(entry => (
             <li>

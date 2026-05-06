@@ -3,28 +3,39 @@ title: Bincio Wiki
 ---
 
 - [[BincioTech]]
-  - Gear e accessori
-  - Componenti e upgrade
-  - Tecnologia e elettronica
+  - [[scelta-bici]]
+  - [[carbonio-vs-alluminio]]
+  - [[marchi-e-brand]]
+  - [[ruote-e-cerchi]]
+  - [[trasmissione-e-catena]]
+  - [[copertoni-tubeless]]
+  - [[attrezzatura-gravel]]
+  - [[accessori-gadget]]
+  - [[gps-e-ciclocomputer]]
+  - [[app-e-servizi]]
+  - [[trasmissioni-tv]]
+  - [[film-podcast]]
   - [[BincioActivity]]
 
 - [[BincioOfficina]]
-  - Manutenzione
-  - Riparazioni
-  - Fai da te
+  - [[freni-a-disco]]
+  - [[manutenzione-cambio]]
+  - [[meccanica-base]]
 
 - [[BincioTour]]
-  - Tour report
-  - Bike packing
-  - Rotte e itinerari
-  - Logistica
+  - [[strade-e-percorsi]]
+  - [[bikepacking]]
+  - [[commuting]]
+  - [[uscite-bincio]]
+  - [[regolamentazioni]]
+  - [[mercato-usato]]
 
 - [[BincioCorsa]]
-  - Allenamento
-  - Gare e competizioni
-  - Performance
 
 - [[BincioAbbigliamento]]
-  - Abbigliamento tecnico
-  - Comfort e protezione
-  - Stagionalità
+
+- Documentazione
+  - [[come-funziona-il-giardino]]
+  - [[come-usare-le-categorie]]
+  - [[markdown]]
+  - [[wikirefs]]
