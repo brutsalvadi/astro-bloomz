@@ -9,7 +9,28 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 
 
-const CONTENT_GLOB: string = './src/content/**/*.md';
+function _globs(): string[] {
+  const cwd = process.cwd();
+  const pagesDir = path.resolve(cwd, '../pages');
+  return [
+    path.join(cwd, 'src/content/**/*.md'),
+    pagesDir + '/**/*.md',
+  ];
+}
+
+function docPathToHref(docPath: string): string {
+  const marker = `${path.sep}pages${path.sep}`;
+  const idx = docPath.lastIndexOf(marker);
+  if (idx !== -1) {
+    return '/entries/' + docPath.slice(idx + marker.length).replace('.md', '');
+  }
+  const contentMarker = `src${path.sep}content`;
+  return '/' + docPath.slice(docPath.lastIndexOf(contentMarker) + contentMarker.length + 1).replace('.md', '');
+}
+
+function findDocPath(fname: string): string | undefined {
+  return fg.sync(_globs()).find(p => path.basename(p, '.md') === fname);
+}
 
 let globalProcessor: Processor;
 let cycleStack: string[] = [];
@@ -42,10 +63,7 @@ export function createResolveEmbedContent(remarkPlugins: any[]) {
       return 'cycle detected';
     }
     cycleStack.push(filename);
-    const docPaths: string[] = fg.sync(CONTENT_GLOB);
-    const docPath: string | undefined = docPaths.find((p) => {
-      return path.basename(p, '.md') === filename;
-    });
+    const docPath: string | undefined = findDocPath(filename);
     let content: string = '';
     if (docPath === undefined) {
       content = 'Error: Content not found for ' + "'" + filename + "'";
@@ -75,15 +93,11 @@ export function resolveHtmlHref(fname: string): string | undefined {
   //  - https://github.com/withastro/docs/pull/1967
   // const posts = import.meta.glob(CONTENT_GLOB, { as: 'raw', eager: true });
   if (!wikirefs.isMedia(fname)) {
-    const docPaths: string[] = fg.sync(CONTENT_GLOB);
-    const docPath: string | undefined = docPaths.find((p) => {
-      return path.basename(p, '.md') === fname;
-    });
+    const docPath = findDocPath(fname);
     if (docPath === undefined) {
       return undefined;
     } else {
-      // todo: support dynamic routes (https://docs.astro.build/en/core-concepts/routing/#dynamic-routes)
-      return docPath.replace('./src/content', '').replace('.md', '');
+      return docPathToHref(docPath);
     }
   // media
   } else {
@@ -106,10 +120,7 @@ export function resolveHtmlHref(fname: string): string | undefined {
 }
 
 export function resolveHtmlText(fname: string): string | undefined {
-  const docPaths: string[] = fg.sync(CONTENT_GLOB);
-  const docPath: string | undefined = docPaths.find((p) => {
-    return path.basename(p, '.md') === fname;
-  });
+  const docPath = findDocPath(fname);
   if (docPath === undefined) {
     return undefined;
   } else {
