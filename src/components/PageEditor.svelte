@@ -17,6 +17,7 @@
   let uploading = false;
   let dragOver = false;
   let fileInput: HTMLInputElement;
+  let heroFileInput: HTMLInputElement;
 
   $: section = SECTIONS.find(s => s.slug === selectedSection) ?? null;
   $: subs = section?.sub ?? [];
@@ -109,6 +110,35 @@
     } catch (e) {
       errorMsg = `Errore: ${e}`;
       deleting = false;
+    }
+  }
+
+  function setHeroImage(url: string) {
+    const line = `heroImage: ${url}`;
+    if (/^heroImage:/m.test(content)) {
+      content = content.replace(/^heroImage:.*$/m, line);
+    } else {
+      // Insert before the closing --- of the frontmatter block
+      const closeIdx = content.indexOf('\n---', content.indexOf('---') + 3);
+      if (closeIdx !== -1) {
+        content = content.slice(0, closeIdx) + '\n' + line + content.slice(closeIdx);
+      }
+    }
+  }
+
+  async function uploadHero(files: FileList | File[]) {
+    const file = Array.from(files)[0];
+    if (!file) return;
+    uploading = true;
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const r = await fetch('/api/assets', { method: 'POST', body: fd, credentials: 'include' });
+      if (!r.ok) { errorMsg = `Upload fallito: ${await r.text()}`; return; }
+      const d = await r.json();
+      setHeroImage(d.url);
+    } finally {
+      uploading = false;
     }
   }
 
@@ -219,6 +249,16 @@
           class="text-xs px-2 py-1 rounded border transition-colors"
           style="color: var(--accent); border-color: var(--accent)"
         >Visualizza →</a>
+      {/if}
+      {#if apiBase === '/stories'}
+        <button
+          on:click={() => heroFileInput.click()}
+          disabled={uploading}
+          class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors px-2 py-1 rounded border border-zinc-700 hover:border-zinc-500 disabled:opacity-40"
+          title="Imposta immagine di copertina"
+        >{uploading ? '…' : '+ Copertina'}</button>
+        <input bind:this={heroFileInput} type="file" accept="image/*" class="hidden"
+          on:change={e => e.currentTarget.files && uploadHero(e.currentTarget.files)} />
       {/if}
       {#if !isNew}
         <button
