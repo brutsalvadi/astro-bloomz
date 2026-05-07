@@ -82,7 +82,10 @@
         body: JSON.stringify({ content }),
       });
       if (!r.ok) throw new Error(await r.text());
-      saveStatus = 'Salvato';
+      saveStatus = 'Costruendo…';
+      const rb = await fetch('/rebuild', { method: 'POST', credentials: 'include' });
+      if (!rb.ok) throw new Error(`Rebuild fallito: ${await rb.text()}`);
+      saveStatus = 'Pubblicato';
       if (isNew) {
         savedUrl = apiBase === '/stories' ? `/blog/${s}/` : `/entries/${s}/`;
       } else {
